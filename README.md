@@ -3,9 +3,10 @@
 Este repositório contém o código-fonte para um sistema de gerenciamento de biblioteca desenvolvido em .NET 7 como parte de um desafio técnico para uma vaga. O sistema permite o gerenciamento de empréstimos, livros e usuários através de uma API RESTful. Abaixo estão as principais rotas disponíveis:
 
 ### Deploy
-Para fazer o deploy utilizei o banco de dados mySQL hospedado no googleCloud, e a para a API utilizei o Azure por facilitar o deploy com o .Net 
-#Swagger
-Explore a API usando o Swagger: [https://bibliotecaappmvp.azurewebsites.net/swagger/index.html](https://bibliotecaappmvp.azurewebsites.net/swagger/index.html)
+-Para fazer o deploy utilizei o banco de dados mySQL hospedado no **google Cloud**, e a para a API utilizei o **Azure** por facilitar o deploy com o .Net 
+
+Swagger
+-Explore a API usando o Swagger: [https://bibliotecaappmvp.azurewebsites.net/swagger/index.html](https://bibliotecaappmvp.azurewebsites.net/swagger/index.html)
 
 ### Emprestimo
 
