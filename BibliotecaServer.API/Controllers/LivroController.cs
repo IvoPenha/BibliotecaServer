@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BibliotecaServer.Application.Interfaces;
-using BibliotecaServer.Core.Communication.Handlers;
 using BibliotecaServer.API.ViewModels;
 using AutoMapper;
-using BibliotecaServer.API.ViewModels.Usuario;
 using BibliotecaServer.Application.DTO;
 using BibliotecaServer.API.ViewModels.Livro;
-using BibliotecaServer.Application.Services;
+using BibliotecaServer.Application.Utilities;
+using BibliotecaServer.Core.Communication.Messages.Notifications;
+using MediatR;
 
 namespace BibliotecaServer.API.Controllers;
 
@@ -16,7 +16,7 @@ public class LivroController : BaseController
     private readonly IMapper _mapper;
     private readonly ILivroService _livrosService;
     public LivroController(
-        DomainNotificationHandler domainNotificationHandler,
+        INotificationHandler<DomainNotification> domainNotificationHandler,
         ILivroService livroService,
         IMapper mapper
         ) : base(domainNotificationHandler)
@@ -38,7 +38,7 @@ public class LivroController : BaseController
 
         return Created(new ResultViewModel
         {
-            Message = "Usuário criado com sucesso",
+            Message = "Livro criado com sucesso",
             Success = true,
             Data = livro.Value
         });
@@ -47,31 +47,27 @@ public class LivroController : BaseController
 
     [HttpPut]
     [Route("/api/livros/{id}")]
-    public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UpdateLivroViewModel livroViewModel )
+    public async Task<IActionResult> UpdateLivro(int id, [FromBody] UpdateLivroViewModel livroViewModel )
     {
         var livroDTO = _mapper.Map<LivroDTO>(livroViewModel);
-        if (id != livroDTO.Id)
-        {
-            return Result();
-        }
 
-        var usuario = await _livrosService.UpdateAsync(livroDTO);
+        var livro = await _livrosService.UpdateAsync(id,livroDTO);
 
         if (HasNotifications())
             return Result();
 
         return Ok(new ResultViewModel
         {
-            Message = "Usuário atualizado com sucesso",
+            Message = "Livro atualizado com sucesso",
             Success = true,
-            Data = usuario.Value
+            Data = livro.Value
         });
 
     }
 
     [HttpDelete]
     [Route("api/livro/{id}")]
-    public async Task<IActionResult> DeleteUsuario(int id)
+    public async Task<IActionResult> DeleteLivro(int id)
     {
         await _livrosService.RemoveAsync(id);
 
@@ -83,25 +79,40 @@ public class LivroController : BaseController
 
     [HttpGet]
     [Route("api/livro/{id}")]
-    public async Task<IActionResult> GetUsuario(int id)
+    public async Task<IActionResult> GetLivro(int id)
     {
-        var usuario = await _livrosService.GetAsync(id);
+        var livro = await _livrosService.GetAsync(id);
 
         if (HasNotifications())
             return Result();
 
         return Ok(new ResultViewModel
         {
-            Message = "Usuário retornado com sucesso",
+            Message = "Livro retornado com sucesso",
             Success = true,
-            Data = usuario.Value
+            Data = livro.Value
         });
     }
 
     [HttpGet]
     [Route("api/livros")]
-    public async Task<IActionResult> GetAllUsuarios()
+    public async Task<IActionResult> GetAllLivros([FromQuery] LivroSearchParameters? searchParams )
     {
+        if (searchParams != null)
+        {
+            var livrosFiltradosDTO = await _livrosService.SearchAsync(searchParams);
+
+            if (HasNotifications())
+                return Result();
+
+            return Ok(new ResultViewModel
+            {
+                Message = "Livros retornados com sucesso",
+                Success = true,
+                Data = livrosFiltradosDTO
+            });
+        }
+
         var livrosDTO = await _livrosService.GetAllAsync();
 
         if (HasNotifications())
@@ -109,7 +120,7 @@ public class LivroController : BaseController
 
         return Ok(new ResultViewModel
         {
-            Message = "Usuários retornados com sucesso",
+            Message = "Livros retornados com sucesso",
             Success = true,
             Data = livrosDTO
         });

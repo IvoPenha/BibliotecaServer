@@ -7,6 +7,8 @@ using BibliotecaServer.API.ViewModels.Usuario;
 using BibliotecaServer.Application.DTO;
 using BibliotecaServer.API.ViewModels.Livro;
 using BibliotecaServer.Application.Services;
+using BibliotecaServer.Core.Communication.Messages.Notifications;
+using MediatR;
 
 namespace BibliotecaServer.API.Controllers;
 
@@ -16,7 +18,7 @@ public class EmprestimoController : BaseController
     private readonly IMapper _mapper;
     private readonly IEmprestimoService _emprestimoService;
     public EmprestimoController(
-        DomainNotificationHandler domainNotificationHandler,
+        INotificationHandler<DomainNotification> domainNotificationHandler,
         IEmprestimoService emprestimoService,
         IMapper mapper
         ) : base(domainNotificationHandler)
@@ -32,12 +34,12 @@ public class EmprestimoController : BaseController
 
         var emprestimo = await _emprestimoService.CreateAsync(emprestimoViewModel.LivroId, emprestimoViewModel.UsuarioId);
 
-        if (HasNotifications())
+        if (!emprestimo.HasValue)
             return Result();
 
         return Created(new ResultViewModel
         {
-            Message = "Usuário criado com sucesso",
+            Message = "Emprestimo realizado com sucesso",
             Success = true,
             Data = emprestimo.Value
         });
@@ -53,7 +55,7 @@ public class EmprestimoController : BaseController
         var emprestimo = await _emprestimoService.Devolver(emprestimoViewModel.LivroId);
 
 
-        if (HasNotifications())
+        if (!emprestimo.HasValue)
             return Result();
 
         return Ok(new ResultViewModel
@@ -76,7 +78,7 @@ public class EmprestimoController : BaseController
 
         return Ok(new ResultViewModel
         {
-            Message = "Usuários retornados com sucesso",
+            Message = "Emprestimo retornados com sucesso",
             Success = true,
             Data = emprestimosDTO
         });
