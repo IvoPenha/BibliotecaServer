@@ -4,7 +4,7 @@ Este repositório contém o código-fonte para um sistema de gerenciamento de bi
 
 ### Deploy
 Para fazer o deploy utilizei o banco de dados mySQL hospedado no googleCloud, e a para a API utilizei o Azure por facilitar o deploy com o .Net 
-Swagger
+#Swagger
 Explore a API usando o Swagger: [https://bibliotecaappmvp.azurewebsites.net/swagger/index.html](https://bibliotecaappmvp.azurewebsites.net/swagger/index.html)
 
 ### Emprestimo
